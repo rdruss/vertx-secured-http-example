@@ -18,26 +18,26 @@ package io.openshift.example;
 
 import io.openshift.example.service.Greeting;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.auth.PubSecKeyOptions;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTAuthOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.JWTAuthHandler;
 import io.vertx.ext.web.handler.StaticHandler;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 public class RestApplication extends AbstractVerticle {
 
-  private final Logger log = LoggerFactory.getLogger(RestApplication.class);
+  private final static Logger LOGGER = Logger.getLogger(RestApplication.class.toString());
   private long counter;
 
   @Override
-  public void start(Future<Void> done) {
+  public void start(Promise<Void> done) {
     // Create a router object.
     Router router = Router.router(vertx);
     router.get("/health").handler(rc -> rc.response().end("OK"));
@@ -65,7 +65,7 @@ public class RestApplication extends AbstractVerticle {
         if (authz.succeeded() && authz.result()) {
           ctx.next();
         } else {
-          log.error("AuthZ failed!");
+          LOGGER.log(Level.SEVERE, "AuthZ failed!");
           ctx.fail(403);
         }
       }));
